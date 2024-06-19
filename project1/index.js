@@ -27,6 +27,8 @@ camera.position.set(-90, 140, 140);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
 
+
+
 const ambientLight = new THREE.AmbientLight(0x333333);
 scene.add(ambientLight);
 

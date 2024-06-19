@@ -18,6 +18,9 @@ orbit.update();
 const ambientLight = new THREE.AmbientLight(0x333333);
 scene.add(ambientLight);
 
+const axisHelper = new THREE.AxesHelper(20)
+scene.add(axisHelper)
+
 const boxGeo = new THREE.BoxGeometry(2, 2, 2)
 const boxMat = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
@@ -107,6 +110,39 @@ const groundSphereContactMaterial = new CANNON.ContactMaterial(
 )
 
 world.addContactMaterial(groundSphereContactMaterial)
+
+// object render at click
+
+const mouse = new THREE.Vector2() /* Position for vector, used for ray-caster */
+const intersectionPoint = new THREE.Vector3()  /* Captures the mouse point precisely */
+const planeNormal = new THREE.Vector3()  /* indicates the direction of the plane */
+const plane = new THREE.Plane() /* plane to be calculated whenever changes the position of the camera */
+const rayCaster = new THREE.Raycaster() /* emit ray between camera and cursor */
+
+
+window.addEventListener("mousemove", (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) *2 + 1;
+  planeNormal.copy(camera.position).normalize() /* normalize generates an unique vector values */
+  plane.setFromNormalAndCoplanarPoint(planeNormal, new THREE.Vector3(0,0,0))
+  rayCaster.setFromCamera(mouse, camera)
+  rayCaster.ray.intersectPlane(plane, intersectionPoint)
+})
+
+window.addEventListener("click", (e) => {
+  const SphereGeometry = new THREE.SphereGeometry(2.125, 30, 30)
+  const sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffea00,
+    metalness: 0,
+    roughness: 0
+  })
+  const balls = new THREE.Mesh(SphereGeometry, sphereMaterial)
+  scene.add(balls)
+  balls.position.copy(intersectionPoint)
+
+})
+
+
 
 function animate(){
     ground.position.copy(groundBody.position)
